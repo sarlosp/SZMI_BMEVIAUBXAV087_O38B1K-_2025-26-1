@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esőzés Előrejelző</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f8ff; display: flex; justify-content: center; padding: 20px; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 500px; width: 100%; }
+        h1 { text-align: center; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #666; font-weight: bold; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 20px; font-weight: bold; text-align: center; font-size: 1.2em; padding: 10px; border-radius: 5px; }
+        .rain { background-color: #ffcccc; color: #a00; }
+        .norain { background-color: #ccffcc; color: #060; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌧️ Esőzés Előrejelző</h1>
+    <p style="text-align:center; color: #777;">Add meg a mai adatokat:</p>
+    
+    <form id="weatherForm">
+        <div class="form-group"><label>Légnyomás (Pressure):</label><input type="number" step="0.1" id="pressure" value="1015.9" required></div>
+        <div class="form-group"><label>Max Hőmérséklet (MaxTemp):</label><input type="number" step="0.1" id="maxtemp" value="21.3" required></div>
+        <div class="form-group"><label>Hőmérséklet (Temperature):</label><input type="number" step="0.1" id="temparature" value="20.7" required></div>
+        <div class="form-group"><label>Min Hőmérséklet (MinTemp):</label><input type="number" step="0.1" id="mintemp" value="20.2" required></div>
+        <div class="form-group"><label>Harmatpont (Dewpoint):</label><input type="number" step="0.1" id="dewpoint" value="19.9" required></div>
+        <div class="form-group"><label>Páratartalom (Humidity %):</label><input type="number" step="0.1" id="humidity" value="95" required></div>
+        <div class="form-group"><label>Felhőzet (Cloud %):</label><input type="number" step="0.1" id="cloud" value="81" required></div>
+        <div class="form-group"><label>Napsütés (Sunshine):</label><input type="number" step="0.1" id="sunshine" value="0.0" required></div>
+        <div class="form-group"><label>Szélirány (Wind Direction):</label><input type="number" step="0.1" id="winddirection" value="40.0" required></div>
+        <div class="form-group"><label>Szélsebesség (Wind Speed):</label><input type="number" step="0.1" id="windspeed" value="13.7" required></div>
+        
+        <button type="button" onclick="makePrediction()">Előrejelzés kérése</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    async function makePrediction() {
+        // Adatok összegyűjtése az űrlapról
+        const data = {
+            pressure: document.getElementById('pressure').value,
+            maxtemp: document.getElementById('maxtemp').value,
+            temparature: document.getElementById('temparature').value,
+            mintemp: document.getElementById('mintemp').value,
+            dewpoint: document.getElementById('dewpoint').value,
+            humidity: document.getElementById('humidity').value,
+            cloud: document.getElementById('cloud').value,
+            sunshine: document.getElementById('sunshine').value,
+            winddirection: document.getElementById('winddirection').value,
+            windspeed: document.getElementById('windspeed').value
+        };
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerText = "Számítás folyamatban...";
+        resultDiv.className = "";
+
+        try {
+            // Kérés küldése a backendnek (app.py)
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            
+            // Eredmény megjelenítése
+            if (result.error) {
+                resultDiv.innerText = "Hiba történt: " + result.error;
+            } else {
+                resultDiv.innerText = result.result;
+                if (result.result.includes("Nem")) {
+                    resultDiv.className = "norain";
+                } else {
+                    resultDiv.className = "rain";
+                }
+            }
+        } catch (error) {
+            resultDiv.innerText = "Hálózati hiba!";
+        }
+    }
+</script>
+
+</body>
+</html>
