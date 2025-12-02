@@ -3,48 +3,749 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Esőzés Előrejelző</title>
+    <title>Esőzés Előrejelző – Interaktív</title>
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f8ff; display: flex; justify-content: center; padding: 20px; }
-        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 500px; width: 100%; }
-        h1 { text-align: center; color: #333; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #666; font-weight: bold; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        button:hover { background-color: #0056b3; }
-        #result { margin-top: 20px; font-weight: bold; text-align: center; font-size: 1.2em; padding: 10px; border-radius: 5px; }
-        .rain { background-color: #ffcccc; color: #a00; }
-        .norain { background-color: #ccffcc; color: #060; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #e0f2ff 0, #f5f7fb 40%, #e9ecef 100%);
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 24px;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1100px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.3fr);
+        }
+
+        @media (max-width: 900px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Bal oldal – űrlap */
+
+        .left {
+            padding: 26px 28px 28px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #0ea5e9, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.45);
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin: 0;
+        }
+
+        .subtitle {
+            margin: 0 0 18px;
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        form {
+            display: grid;
+            gap: 18px;
+        }
+
+        .section {
+            border-radius: 14px;
+            padding: 14px 14px 10px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title span.icon {
+            font-size: 1.1rem;
+        }
+
+        .section-hint {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        @media (max-width: 750px) {
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .label-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .unit-chip {
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: #e5f3ff;
+            color: #1d4ed8;
+        }
+
+        .hint-text {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s, transform 0.05s;
+            background: #fff;
+        }
+
+        input[type="number"]:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 1px #bfdbfe;
+        }
+
+        input[type="number"]:hover {
+            border-color: #9ca3af;
+        }
+
+        .quick-fill {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            padding: 3px 6px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .quick-fill:hover {
+            background: #e5e7eb;
+        }
+
+        .actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button.predict-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.98rem;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.45);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, filter 0.1s;
+        }
+
+        button.predict-btn:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.6);
+        }
+
+        button.predict-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.5);
+        }
+
+        .secondary-btn {
+            border-radius: 999px;
+            padding: 8px 10px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            color: #4b5563;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .secondary-btn:hover {
+            background: #e5e7eb;
+        }
+
+        /* Jobb oldal – eredmények, “ábrák” */
+
+        .right {
+            background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 50%, #020617 100%);
+            color: #e5e7eb;
+            padding: 24px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .right::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 0, rgba(56, 189, 248, 0.18), transparent 55%);
+            pointer-events: none;
+        }
+
+        .right-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-card {
+            border-radius: 16px;
+            padding: 16px 14px;
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.8));
+            border: 1px solid rgba(129, 140, 248, 0.55);
+            box-shadow: 0 14px 35px rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: fadeIn 0.35s ease-out;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #c7d2fe;
+        }
+
+        .result-pill {
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            background: rgba(37, 99, 235, 0.3);
+            border: 1px solid rgba(191, 219, 254, 0.7);
+        }
+
+        .result-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .result-emoji {
+            font-size: 2rem;
+        }
+
+        .result-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .result-subtext {
+            font-size: 0.8rem;
+            color: #a5b4fc;
+        }
+
+        .mini-metrics {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        @media (max-width: 900px) {
+            .mini-metrics {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .mini-card {
+            border-radius: 12px;
+            padding: 8px 10px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+        }
+
+        .mini-label {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        .mini-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .mini-unit {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            margin-left: 4px;
+        }
+
+        /* Interaktív "ábrák" – csíkdiagramok */
+
+        .bars {
+            border-radius: 14px;
+            padding: 12px 12px 10px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(55, 65, 81, 0.95);
+            margin-top: 4px;
+        }
+
+        .bars-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .bar-row {
+            margin-bottom: 6px;
+        }
+
+        .bar-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 3px;
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(31, 41, 55, 0.9);
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+            transition: width 0.25s ease-out;
+        }
+
+        .legend {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-right: 8px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🌧️ Esőzés Előrejelző</h1>
-    <p style="text-align:center; color: #777;">Add meg a mai adatokat:</p>
-    
-    <form id="weatherForm">
-        <div class="form-group"><label>Légnyomás (Pressure):</label><input type="number" step="0.1" id="pressure" value="1015.9" required></div>
-        <div class="form-group"><label>Max Hőmérséklet (MaxTemp):</label><input type="number" step="0.1" id="maxtemp" value="21.3" required></div>
-        <div class="form-group"><label>Hőmérséklet (Temperature):</label><input type="number" step="0.1" id="temparature" value="20.7" required></div>
-        <div class="form-group"><label>Min Hőmérséklet (MinTemp):</label><input type="number" step="0.1" id="mintemp" value="20.2" required></div>
-        <div class="form-group"><label>Harmatpont (Dewpoint):</label><input type="number" step="0.1" id="dewpoint" value="19.9" required></div>
-        <div class="form-group"><label>Páratartalom (Humidity %):</label><input type="number" step="0.1" id="humidity" value="95" required></div>
-        <div class="form-group"><label>Felhőzet (Cloud %):</label><input type="number" step="0.1" id="cloud" value="81" required></div>
-        <div class="form-group"><label>Napsütés (Sunshine):</label><input type="number" step="0.1" id="sunshine" value="0.0" required></div>
-        <div class="form-group"><label>Szélirány (Wind Direction):</label><input type="number" step="0.1" id="winddirection" value="40.0" required></div>
-        <div class="form-group"><label>Szélsebesség (Wind Speed):</label><input type="number" step="0.1" id="windspeed" value="13.7" required></div>
-        
-        <button type="button" onclick="makePrediction()">Előrejelzés kérése</button>
-    </form>
+<div class="app">
+    <!-- Bal oldal: űrlap -->
+    <div class="left">
+        <div class="app-header">
+            <div class="logo-circle">🌧️</div>
+            <div>
+                <h1>Esőzés Előrejelző</h1>
+                <p class="subtitle">Add meg a mai meteorológiai adatokat, és megmondjuk, várható-e csapadék.</p>
+            </div>
+        </div>
 
-    <div id="result"></div>
+        <div class="badge-row">
+            <span class="badge">📏 Mértékegységek megjelenítve</span>
+            <span class="badge">📊 Mini “ábrák” a fő paraméterekhez</span>
+            <span class="badge">⚙️ ML modell a háttérben (Flask)</span>
+        </div>
+
+        <form id="weatherForm" onsubmit="event.preventDefault(); makePrediction();">
+            <!-- Légkör blokk -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon">🌡️</span>
+                        Légkör
+                    </div>
+                    <div class="section-hint">Nyomás + hőmérséklet</div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="pressure">Légnyomás</label>
+                            <span class="unit-chip">hPa</span>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="number" step="0.1" id="pressure" value="1015.9" required>
+                            <button type="button" class="quick-fill" onclick="setDefault('pressure', 1015.9)">átlag</button>
+                        </div>
+                        <div class="hint-text">~1010–1025 hPa tipikusan.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="humidity">Páratartalom</label>
+                            <span class="unit-chip">%</span>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="number" step="0.1" id="humidity" value="95" required>
+                            <button type="button" class="quick-fill" onclick="setDefault('humidity', 70)">közepes</button>
+                        </div>
+                        <div class="hint-text">80% felett már nagyon nedves levegő.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hőmérséklet blokk -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon">🌈</span>
+                        Hőmérséklet & Harmatpont
+                    </div>
+                    <div class="section-hint">Hőingás + telítettség</div>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="maxtemp">Max. hőmérséklet</label>
+                            <span class="unit-chip">°C</span>
+                        </div>
+                        <input type="number" step="0.1" id="maxtemp" value="21.3" required>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="temparature">Átlag hőmérséklet</label>
+                            <span class="unit-chip">°C</span>
+                        </div>
+                        <input type="number" step="0.1" id="temparature" value="20.7" required>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="mintemp">Min. hőmérséklet</label>
+                            <span class="unit-chip">°C</span>
+                        </div>
+                        <input type="number" step="0.1" id="mintemp" value="20.2" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-2" style="margin-top: 10px;">
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="dewpoint">Harmatpont</label>
+                            <span class="unit-chip">°C</span>
+                        </div>
+                        <input type="number" step="0.1" id="dewpoint" value="19.9" required>
+                        <div class="hint-text">Ha közel van a hőmérséklethez, nagyobb esély az esőre.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="cloud">Felhőzet</label>
+                            <span class="unit-chip">%</span>
+                        </div>
+                        <input type="number" step="0.1" id="cloud" value="81" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Szél & Napsütés blokk -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon">💨</span>
+                        Szél & Napsütés
+                    </div>
+                    <div class="section-hint">Dinamikus időjárási tényezők</div>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="sunshine">Napsütés</label>
+                            <span class="unit-chip">óra</span>
+                        </div>
+                        <input type="number" step="0.1" id="sunshine" value="0.0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="winddirection">Szélirány</label>
+                            <span class="unit-chip">°</span>
+                        </div>
+                        <input type="number" step="0.1" id="winddirection" value="40.0" required>
+                        <div class="hint-text">0° = észak, 90° = kelet, stb.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="windspeed">Szélsebesség</label>
+                            <span class="unit-chip">km/h</span>
+                        </div>
+                        <input type="number" step="0.1" id="windspeed" value="13.7" required>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="predict-btn">
+                        <span>Eső valószínűségének lekérése</span> <span>🔍</span>
+                    </button>
+                    <button type="button" class="secondary-btn" onclick="resetForm()">Alapértékek visszaállítása</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Jobb oldal: eredmény + mini “ábrák” -->
+    <div class="right">
+        <div class="right-content">
+            <div id="resultCard" class="result-card">
+                <div class="result-header">
+                    <div class="result-title">Eredmény</div>
+                    <div class="result-pill" id="resultStatus">Várakozás...</div>
+                </div>
+
+                <div class="result-main">
+                    <div class="result-emoji" id="resultEmoji">🌤️</div>
+                    <div>
+                        <div class="result-text" id="resultText">Add meg az adatokat, majd kattints az előrejelzésre.</div>
+                        <div class="result-subtext" id="resultSubtext">
+                            A háttérben egy gépi tanulásos modell dolgozik a megadott meteorológiai paraméterekkel.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mini-metrics">
+                    <div class="mini-card">
+                        <div class="mini-label">Rel. páratartalom</div>
+                        <div class="mini-value"><span id="mmHumidity">–</span><span class="mini-unit">%</span></div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="mini-label">Felhőzet</div>
+                        <div class="mini-value"><span id="mmCloud">–</span><span class="mini-unit">%</span></div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="mini-label">Napsütés</div>
+                        <div class="mini-value"><span id="mmSunshine">–</span><span class="mini-unit">óra</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bars" style="margin-top: 14px;">
+                <div class="bars-title">Fő mutatók – vizuális áttekintés</div>
+
+                <div class="bar-row">
+                    <div class="bar-label-row">
+                        <span>Páratartalom</span>
+                        <span id="barHumidityLabel">–%</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="barHumidity"></div>
+                    </div>
+                </div>
+
+                <div class="bar-row">
+                    <div class="bar-label-row">
+                        <span>Felhőzet</span>
+                        <span id="barCloudLabel">–%</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="barCloud"></div>
+                    </div>
+                </div>
+
+                <div class="bar-row">
+                    <div class="bar-label-row">
+                        <span>Napsütés</span>
+                        <span id="barSunshineLabel">– óra</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="barSunshine"></div>
+                    </div>
+                </div>
+
+                <div class="bar-row">
+                    <div class="bar-label-row">
+                        <span>Szélsebesség</span>
+                        <span id="barWindLabel">– km/h</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="barWind"></div>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <span><span class="legend-dot"></span> alacsony → közepes → magas érték</span><br>
+                    <span>Az ábrák a saját, éppen beírt adataidból készülnek – nincs extra backend lekérés.</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
+    function setDefault(id, value) {
+        document.getElementById(id).value = value;
+        updateVisuals();
+    }
+
+    function resetForm() {
+        document.getElementById('pressure').value = 1015.9;
+        document.getElementById('maxtemp').value = 21.3;
+        document.getElementById('temparature').value = 20.7;
+        document.getElementById('mintemp').value = 20.2;
+        document.getElementById('dewpoint').value = 19.9;
+        document.getElementById('humidity').value = 95;
+        document.getElementById('cloud').value = 81;
+        document.getElementById('sunshine').value = 0.0;
+        document.getElementById('winddirection').value = 40.0;
+        document.getElementById('windspeed').value = 13.7;
+        updateVisuals();
+        resetResult();
+    }
+
+    function resetResult() {
+        document.getElementById('resultStatus').textContent = 'Várakozás...';
+        document.getElementById('resultEmoji').textContent = '🌤️';
+        document.getElementById('resultText').textContent = 'Add meg az adatokat, majd kattints az előrejelzésre.';
+        document.getElementById('resultSubtext').textContent =
+            'A háttérben egy gépi tanulásos modell dolgozik a megadott meteorológiai paraméterekkel.';
+    }
+
     async function makePrediction() {
-        // Adatok összegyűjtése az űrlapról
         const data = {
             pressure: document.getElementById('pressure').value,
             maxtemp: document.getElementById('maxtemp').value,
@@ -58,12 +759,17 @@
             windspeed: document.getElementById('windspeed').value
         };
 
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerText = "Számítás folyamatban...";
-        resultDiv.className = "";
+        const status = document.getElementById('resultStatus');
+        const text = document.getElementById('resultText');
+        const emoji = document.getElementById('resultEmoji');
+        const sub = document.getElementById('resultSubtext');
+
+        status.textContent = 'Számítás folyamatban...';
+        text.textContent = 'A modell feldolgozza az adatokat...';
+        emoji.textContent = '⏳';
+        sub.textContent = 'Kérlek várj egy pillanatot.';
 
         try {
-            // Kérés küldése a backendnek (app.py)
             const response = await fetch('/predict', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -71,22 +777,69 @@
             });
 
             const result = await response.json();
-            
-            // Eredmény megjelenítése
+
             if (result.error) {
-                resultDiv.innerText = "Hiba történt: " + result.error;
+                status.textContent = 'Hiba';
+                text.textContent = 'Hiba történt: ' + result.error;
+                emoji.textContent = '⚠️';
+                sub.textContent = 'Ellenőrizd az adatokat vagy a szerver naplóit.';
             } else {
-                resultDiv.innerText = result.result;
-                if (result.result.includes("Nem")) {
-                    resultDiv.className = "norain";
+                const msg = result.result || '';
+
+                text.textContent = msg;
+                if (msg.includes('Nem')) {
+                    status.textContent = 'Alacsony esély';
+                    emoji.textContent = '🌤️';
+                    sub.textContent = 'A modell szerint jelenleg nem valószínű az eső.';
                 } else {
-                    resultDiv.className = "rain";
+                    status.textContent = 'Magas esély';
+                    emoji.textContent = '🌧️';
+                    sub.textContent = 'Érdemes esernyőt vinni – a modell esőt jelez.';
                 }
             }
         } catch (error) {
-            resultDiv.innerText = "Hálózati hiba!";
+            status.textContent = 'Hálózati hiba';
+            text.textContent = 'Nem sikerült elérni a szervert.';
+            emoji.textContent = '📡';
+            sub.textContent = 'Ellenőrizd, hogy a Flask szerver fut-e.';
         }
     }
+
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    function updateVisuals() {
+        const humidity = parseFloat(document.getElementById('humidity').value) || 0;
+        const cloud = parseFloat(document.getElementById('cloud').value) || 0;
+        const sunshine = parseFloat(document.getElementById('sunshine').value) || 0;
+        const wind = parseFloat(document.getElementById('windspeed').value) || 0;
+
+        document.getElementById('mmHumidity').textContent = humidity.toFixed(0);
+        document.getElementById('mmCloud').textContent = cloud.toFixed(0);
+        document.getElementById('mmSunshine').textContent = sunshine.toFixed(1);
+
+        document.getElementById('barHumidityLabel').textContent = humidity.toFixed(0) + '%';
+        document.getElementById('barCloudLabel').textContent = cloud.toFixed(0) + '%';
+        document.getElementById('barSunshineLabel').textContent = sunshine.toFixed(1) + ' óra';
+        document.getElementById('barWindLabel').textContent = wind.toFixed(1) + ' km/h';
+
+        document.getElementById('barHumidity').style.width = clamp(humidity, 0, 100) + '%';
+        document.getElementById('barCloud').style.width = clamp(cloud, 0, 100) + '%';
+        document.getElementById('barSunshine').style.width = clamp(sunshine * 10, 0, 100) + '%'; // 0–10 óra
+        document.getElementById('barWind').style.width = clamp(wind * 4, 0, 100) + '%'; // ~0–25 km/h
+    }
+
+    // Minden inputra frissítjük a vizuális “ábrákat”
+    ['humidity', 'cloud', 'sunshine', 'windspeed'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', updateVisuals);
+        }
+    });
+
+    // Kezdő állapot
+    updateVisuals();
 </script>
 
 </body>
