@@ -1,0 +1,19 @@
+SVM tanítása GridSearch-sel (n_jobs=1)...
+Fitting 5 folds for each of 25 candidates, totalling 125 fits
+Legjobb paraméterek: {'svc__C': 10, 'svc__gamma': 0.01, 'svc__kernel': 'rbf'}
+Végső modell kiértékelése...
+Végső modell pontossága: 85.14%
+
+Osztályozási riport:
+              precision    recall  f1-score   support
+
+           0       0.88      0.62      0.73        24
+           1       0.84      0.96      0.90        50
+
+    accuracy                           0.85        74
+   macro avg       0.86      0.79      0.81        74
+weighted avg       0.86      0.85      0.84        74
+
+Konfúziós mátrix:
+[[15  9]
+ [ 2 48]]
